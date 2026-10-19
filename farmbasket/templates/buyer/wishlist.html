@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import csrf, product_photo %}
+{% block title %}Wishlist | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Wishlist</h1></div>
+  {% if items %}
+  <div class="grid-products">
+    {% for w in items %}
+    {% set p = w.product %}
+    <article class="product {% if not p.in_stock %}product-unavailable{% endif %}">
+      {{ product_photo(p) }}
+      <div class="product-body">
+        <h3><a href="{{ url_for('marketplace.product_detail', product_id=p.id) }}">{{ p.name }}</a></h3>
+        <span class="muted small">{{ p.farmer.full_name }}{% if p.farmer.locality %}, {{ p.farmer.locality.label }}{% endif %}</span>
+        <span class="price">{{ p.price|inr }} <span class="muted small">per {{ p.unit }}</span></span>
+        <div class="product-actions row">
+          {% if p.in_stock and current_user.locality_id == p.farmer.locality_id %}
+          <form class="inline-form" method="post" action="{{ url_for('marketplace.add_to_cart', product_id=p.id) }}">{{ csrf() }}<input type="hidden" name="quantity" value="1"><button class="btn btn-sm btn-accent" type="submit">Add to cart</button></form>
+          {% else %}<span class="muted small">{{ 'Not delivered to your area' if p.in_stock else 'Unavailable' }}</span>{% endif %}
+          <form class="inline-form" method="post" action="{{ url_for('buyer.remove_from_wishlist', product_id=p.id) }}">{{ csrf() }}<button class="linkbutton" type="submit">Remove</button></form>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty"><p>Nothing saved yet.</p><a class="btn" href="{{ url_for('marketplace.index') }}">Shop</a></div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import badge %}
+{% block title %}Orders | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Orders</h1></div>
+  {% if orders %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Order</th><th>Placed</th><th>Items</th><th>Delivery window</th><th>Status</th><th class="num">Total</th></tr></thead>
+      <tbody>
+        {% for o in orders %}
+        <tr>
+          <td><a href="{{ url_for('buyer.order_detail', order_id=o.id) }}">{{ o.order_number }}</a></td>
+          <td>{{ o.created_at|dt }}</td>
+          <td>{{ o.items|length }}</td>
+          <td>{{ o.delivery_slot or 'Not set' }}</td>
+          <td>{{ badge(o.status) }}</td>
+          <td class="num">{{ o.total_amount|inr }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty"><p>No orders yet.</p><a class="btn" href="{{ url_for('marketplace.index') }}">Shop</a></div>
+  {% endif %}
+</div>
+{% endblock %}

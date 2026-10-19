@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Analytics | {{ business_name }}{% endblock %}
+{% block vendor_scripts %}<script src="{{ url_for('static', filename='vendor/chart.umd.js') }}"></script>{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Analytics</h1></div>
+  <div class="card">
+    <h2>Sales, last 14 days</h2>
+    <div class="chart-box"><canvas data-chart="line" data-money="1" data-label="Sales (Rs.)" data-url="{{ url_for('farmer.api_revenue_trend') }}" aria-label="Sales over the last 14 days" role="img"></canvas></div>
+  </div>
+  <div class="card">
+    <h2>Units sold by product</h2>
+    <div class="chart-box"><canvas data-chart="bar" data-horizontal="1" data-label="Units sold" data-url="{{ url_for('farmer.api_top_products') }}" aria-label="Units sold by product" role="img"></canvas></div>
+  </div>
+</div>
+{% endblock %}

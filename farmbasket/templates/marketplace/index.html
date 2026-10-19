@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import csrf, badge, product_photo, category_tag, icon, category_icon_name %}
+{% block title %}Shop | {{ business_name }}{% endblock %}
+
+{% block areabar %}
+<div class="areabar">
+  <div class="container">
+    {% if locality %}
+      <span class="where">{{ icon('pin', 20) }}Delivering to <strong>{{ locality.label }}</strong></span>
+      <span class="links">
+        <a href="{{ url_for('marketplace.set_locality') }}">Change area</a>
+        <a href="{{ url_for('marketplace.index', all=1, q=search or None, category=selected_category if selected_category != 'all' else None) }}">Show all areas</a>
+      </span>
+    {% elif current_user.is_authenticated and current_user.role != 'buyer' %}
+      <span class="where">{{ icon('pin', 20) }}Showing products from all areas</span>
+    {% elif show_all %}
+      <span class="where">{{ icon('pin', 20) }}Showing products from all areas. You can only order from farmers in your own area.</span>
+      <a class="btn btn-accent btn-sm" href="{{ url_for('marketplace.set_locality') }}">Choose my area</a>
+    {% else %}
+      <span class="where">{{ icon('pin', 20) }}Choose your area to see farmers who deliver to you.</span>
+      <a class="btn btn-accent btn-sm" href="{{ url_for('marketplace.set_locality') }}">{{ icon('pin', 16) }}Choose area</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <p class="eyebrow">Shop</p>
+    <h1>Fresh from farms near you</h1>
+    <p class="hero-sub">{{ products|length }} product{{ '' if products|length == 1 else 's' }} available{% if locality %} in {{ locality.label }}{% endif %}</p>
+    <form method="get" action="{{ url_for('marketplace.index') }}" class="search-row" role="search">
+      {% if show_all %}<input type="hidden" name="all" value="1">{% endif %}
+      {% if selected_category != 'all' %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+      <div class="search-field rel">
+        {{ icon('search', 20) }}
+        <input type="search" id="search-input" name="q" value="{{ search }}" placeholder="Search for vegetables, fruits, dairy, grains" aria-label="Search products" autocomplete="off"
+               data-suggest-url="{{ url_for('marketplace.search_suggestions') }}" data-search-url="{{ url_for('marketplace.index') }}">
+        <div id="search-suggestions" class="suggest" hidden></div>
+      </div>
+      <button class="btn" type="submit">Search</button>
+    </form>
+    <nav class="chips" aria-label="Categories">
+      <a class="chip {% if selected_category == 'all' %}active{% endif %}" href="{{ url_for('marketplace.index', q=search or None, all=1 if show_all else None) }}">{{ icon('grid', 20) }}All</a>
+      {% for c in categories %}
+      <a class="chip {% if selected_category == c %}active{% endif %}" href="{{ url_for('marketplace.index', category=c, q=search or None, all=1 if show_all else None) }}">{{ icon(category_icon_name(c)|trim, 20) }}{{ c }}</a>
+      {% endfor %}
+    </nav>
+  </div>
+</section>
+
+<div class="container">
+  {% if not current_user.is_authenticated %}
+  <div class="how">
+    <div><span class="n">1</span><span class="ico">{{ icon('pin', 26) }}</span><p><strong>Choose your area</strong>See farmers who deliver where you live.</p></div>
+    <div><span class="n">2</span><span class="ico">{{ icon('calendar', 26) }}</span><p><strong>Pick a delivery window</strong>Order from farmers in your area and choose a time slot.</p></div>
+    <div><span class="n">3</span><span class="ico">{{ icon('wallet', 26) }}</span><p><strong>Pay on delivery</strong>Payment is cash when your order arrives.</p></div>
+  </div>
+  {% endif %}
+
+  {% if popular %}
+  <section class="section">
+    <h2>Most ordered{% if locality %} in {{ locality.name }}{% endif %}</h2>
+    <div class="grid-products">
+      {% for p in popular %}
+      <div class="product">
+        {{ product_photo(p) }}
+        <div class="product-body">
+          <h3><a href="{{ url_for('marketplace.product_detail', product_id=p.id) }}">{{ p.name }}</a></h3>
+          <span class="muted small">{{ p.farmer.full_name }}</span>
+          <span class="price">{{ p.price|inr }} <span class="muted small">per {{ p.unit }}</span></span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="section">
+    {% if popular %}<h2>All products</h2>{% endif %}
+    {% if products %}
+    <div class="grid-products">
+      {% for p in products %}
+      <article class="product">
+        {{ product_photo(p) }}
+        <div class="product-body">
+          {{ category_tag(p.category) }}
+          <h3><a href="{{ url_for('marketplace.product_detail', product_id=p.id) }}">{{ p.name }}</a></h3>
+          <span class="small">{{ p.farmer.full_name }}{% if p.farmer.is_verified_farmer %} {{ badge('Verified') }}{% endif %}</span>
+          <span class="muted small">{{ p.farmer.locality.label if p.farmer.locality else 'Area not set' }}</span>
+          {% if p.freshness %}<span class="small">{{ p.freshness }}</span>{% endif %}
+          <span class="price">{{ p.price|inr }} <span class="muted small">per {{ p.unit }}</span></span>
+          <span class="muted small">{{ p.stock }} {{ p.unit }} in stock</span>
+          <div class="product-actions">
+            {% if not current_user.is_authenticated %}
+              <a class="btn btn-secondary btn-block" href="{{ url_for('auth.login') }}">Log in to order</a>
+            {% elif current_user.role == 'buyer' %}
+              {% if buyer_locality_id and p.farmer.locality_id == buyer_locality_id %}
+              <form class="buy-row" method="post" action="{{ url_for('marketplace.add_to_cart', product_id=p.id) }}">
+                {{ csrf() }}
+                <input class="qty" type="number" name="quantity" value="1" min="1" max="{{ p.stock }}" aria-label="Quantity">
+                <button class="btn btn-accent" type="submit">Add to cart</button>
+              </form>
+              {% else %}
+              <span class="muted small">Not delivered to your area</span>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty">
+      {{ icon('box', 48) }}
+      {% if locality and elsewhere %}
+        <p><strong>No farmers deliver to {{ locality.label }} yet.</strong></p>
+        <p class="muted">{{ elsewhere }} product{{ '' if elsewhere == 1 else 's' }} {{ 'is' if elsewhere == 1 else 'are' }} available in other areas, but they cannot be delivered to you.</p>
+        <a class="btn btn-secondary" href="{{ url_for('marketplace.index', all=1) }}">Show all areas</a>
+      {% elif not has_localities %}
+        <p><strong>No delivery areas are open yet.</strong></p>
+      {% elif search or selected_category != 'all' %}
+        <p><strong>No products match your search.</strong></p>
+        <p class="muted">Try another word or category.</p>
+      {% else %}
+        <p><strong>No products{% if locality %} in {{ locality.label }}{% endif %} yet.</strong></p>
+        <p class="muted">Check back soon{% if not locality %} or choose another delivery area{% endif %}.</p>
+        {% if not locality and (not current_user.is_authenticated or current_user.role == 'buyer') %}
+        <a class="btn btn-accent" href="{{ url_for('marketplace.set_locality') }}">{{ icon('pin', 18) }}Choose delivery area</a>
+        {% endif %}
+      {% endif %}
+    </div>
+    {% endif %}
+  </section>
+
+  {% if unavailable %}
+  <section class="section">
+    <h2>Currently unavailable in {{ locality.label }}</h2>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Product</th><th>Farmer</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for p in unavailable %}
+          <tr>
+            <td><a href="{{ url_for('marketplace.product_detail', product_id=p.id) }}">{{ p.name }}</a></td>
+            <td>{{ p.farmer.full_name }}</td>
+            <td>{{ badge('Out of stock' if p.is_available else 'Unlisted') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

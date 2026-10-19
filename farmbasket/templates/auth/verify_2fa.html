@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import field %}
+{% block title %}Two-factor check | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <h1>Two-factor check</h1>
+  <p class="muted">Enter the 6 digit code from your authenticator app.</p>
+  <form class="card" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    {{ field(form.code, autocomplete="one-time-code", inputmode="numeric", autofocus=true) }}
+    <button class="btn btn-block" type="submit">Continue</button>
+  </form>
+</div>
+{% endblock %}

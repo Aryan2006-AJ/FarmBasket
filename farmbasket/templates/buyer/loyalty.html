@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import stat %}
+{% block title %}Loyalty points | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head">
+    <div><h1>Loyalty points</h1>
+    <p class="muted">You earn 1 point for every Rs. 100 on an order. At checkout, 1 point takes Rs. 1 off, up to half the order.</p></div>
+  </div>
+  <div class="stats">{{ stat('Balance', points, tone='ok') }}</div>
+  <section class="section">
+    <h2>History</h2>
+    {% if history %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Date</th><th>Reason</th><th class="num">Points</th></tr></thead>
+        <tbody>
+          {% for h in history %}
+          <tr><td>{{ h.created_at|d }}</td><td>{{ h.reason }}</td><td class="num">{{ '+' if h.points > 0 }}{{ h.points }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<div class="empty">No points activity yet.</div>{% endif %}
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import csrf, field, badge %}
+{% block title %}Coupons | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Coupons</h1></div>
+  <form class="card" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <h2>New coupon</h2>
+    <div class="form-row">{{ field(form.code, help="Letters and numbers. Saved in capitals.") }}{{ field(form.discount_type) }}</div>
+    <div class="form-row">{{ field(form.discount_value, step="0.01") }}{{ field(form.min_order_amount, step="0.01") }}</div>
+    {{ field(form.max_uses, help="Leave empty for no limit.") }}
+    <button class="btn" type="submit">Create coupon</button>
+  </form>
+
+  <section class="section">
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Code</th><th>Discount</th><th class="num">Minimum order</th><th class="num">Used</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          {% for c in coupons %}
+          <tr>
+            <td>{{ c.code }}</td>
+            <td>{% if c.discount_type == 'percent' %}{{ c.discount_value|round(2) }}%{% else %}{{ c.discount_value|inr }}{% endif %}</td>
+            <td class="num">{{ (c.min_order_amount or 0)|inr }}</td>
+            <td class="num">{{ c.used_count }}{% if c.max_uses %} of {{ c.max_uses }}{% endif %}</td>
+            <td>{{ badge('Active' if c.is_active else 'Closed') }}</td>
+            <td class="right"><form class="inline-form" method="post" action="{{ url_for('admin.toggle_coupon', coupon_id=c.id) }}">{{ csrf() }}<button class="btn btn-secondary btn-sm" type="submit">{{ 'Turn off' if c.is_active else 'Turn on' }}</button></form></td>
+          </tr>
+          {% else %}<tr><td colspan="6" class="muted">No coupons yet.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

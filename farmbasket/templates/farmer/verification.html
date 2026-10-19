@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import field, badge %}
+{% block title %}Verification | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <h1>Farmer verification</h1>
+  <p class="muted">Upload an identity or farm ownership document. An admin reviews it, and approved farmers get a Verified label.</p>
+  <div class="card">
+    <p>Status: {{ badge(current_user.kyc_status) }}</p>
+    {% if current_user.kyc_status == 'Rejected' and current_user.kyc_notes %}<p class="error">Reviewer note: {{ current_user.kyc_notes }}</p>{% endif %}
+    {% if current_user.kyc_status == 'Pending' %}<p class="muted small">Submitted {{ current_user.kyc_submitted_at|d }}. You can upload a new file to replace it.</p>{% endif %}
+  </div>
+  {% if current_user.kyc_status != 'Approved' %}
+  <form class="card" method="post" enctype="multipart/form-data" novalidate>
+    {{ form.hidden_tag() }}
+    {{ field(form.document, help="Image or PDF, up to 16 MB. Only admins can open it.") }}
+    <button class="btn" type="submit">Submit for review</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import badge %}
+{% block title %}Products | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Products</h1></div>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Product</th><th>Category</th><th>Farmer</th><th>Area</th><th class="num">Price</th><th class="num">Stock</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for p in products %}
+        <tr>
+          <td>{{ p.name }}<div class="muted small">{{ p.display_id }}</div></td><td>{{ p.category }}</td>
+          <td>{{ p.farmer.full_name }}</td><td>{{ p.farmer.locality.label if p.farmer.locality else 'Not set' }}</td>
+          <td class="num">{{ p.price|inr }} / {{ p.unit }}</td><td class="num">{{ p.stock }}</td>
+          <td>{{ badge('In stock' if p.in_stock else ('Out of stock' if p.is_available else 'Unlisted')) }}</td>
+        </tr>
+        {% else %}<tr><td colspan="7" class="muted">No products yet.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

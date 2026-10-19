@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import stat, badge %}
+{% block title %}Dashboard | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head">
+    <div>
+      <h1>Hello, {{ current_user.full_name.split(' ')[0] }}</h1>
+      <p class="muted">Delivering in {{ current_user.locality.label if current_user.locality else 'no area set' }}
+        {% if current_user.is_verified_farmer %} {{ badge('Verified') }}{% endif %}</p>
+    </div>
+    <a class="btn" href="{{ url_for('farmer.add_product') }}">Add product</a>
+  </div>
+
+  {% if current_user.kyc_status in ('Not Submitted', 'Rejected') %}
+  <div class="notice">Your account is not verified. <a href="{{ url_for('farmer.verification') }}">Submit a document</a> to show a Verified label on your products.</div>
+  {% endif %}
+  {% if low_stock %}
+  <div class="notice">Running low: {% for p in low_stock %}{{ p.name }} ({{ p.stock }} {{ p.unit }}){{ ', ' if not loop.last }}{% endfor %}.</div>
+  {% endif %}
+
+  <div class="stats">
+    {{ stat('Products', total_products, url_for('farmer.products'), tone='info') }}
+    {{ stat('Listed and in stock', active_listings, tone='ok') }}
+    {{ stat('Units in stock', total_stock, tone='info') }}
+    {{ stat('Orders', stats.total_orders, url_for('farmer.orders'), tone='info') }}
+    {{ stat('Orders to deliver', stats.pending_orders, url_for('farmer.orders'), tone='warn' if stats.pending_orders else 'ok') }}
+    {{ stat('Sales', stats.total_sales|inr, tone='ok') }}
+    {{ stat('Payout pending', stats.pending_earnings|inr, url_for('farmer.earnings'), tone='warn' if stats.pending_earnings else 'ok') }}
+    {{ stat('Paid out', stats.paid_earnings|inr, url_for('farmer.earnings'), tone='ok') }}
+  </div>
+
+  <section class="section">
+    <div class="row-between"><h2>Latest order items</h2><a href="{{ url_for('farmer.orders') }}">All orders</a></div>
+    {% if recent_items %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Order</th><th>Item</th><th>Window</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for i in recent_items %}
+          <tr><td>{{ i.order.order_number }}</td><td>{{ i.product_name }} x {{ i.quantity }}</td><td>{{ i.order.delivery_slot or 'Not set' }}</td><td>{{ badge(i.status) }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<div class="empty">No orders yet.</div>{% endif %}
+  </section>
+</div>
+{% endblock %}

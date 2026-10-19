@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import csrf, badge %}
+{% block title %}Orders | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Orders to deliver</h1></div>
+  {% if items %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Order</th><th>Item</th><th>Deliver to</th><th>Window</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for i in items %}
+        {% set o = i.order %}
+        <tr>
+          <td>{{ o.order_number }}<div class="muted small">{{ o.created_at|dt }}</div></td>
+          <td>{{ i.product_name }}<div class="muted small">{{ i.quantity }} x {{ i.price|inr }} = {{ i.subtotal|inr }}</div></td>
+          <td>
+            {% if i.status == 'Cancelled' %}<span class="muted">Cancelled</span>
+            {% else %}
+              {{ o.delivery_name }}<br>{{ o.delivery_phone }}<br>
+              <span class="small">{{ o.delivery_address }}, {{ o.delivery_city }} {{ o.delivery_pincode }}</span>
+              {% if o.payment_method == 'COD' %}<div class="small">Cash on delivery</div>{% endif %}
+            {% endif %}
+          </td>
+          <td>{{ o.delivery_slot or 'Not set' }}</td>
+          <td>{{ badge(i.status) }}</td>
+          <td class="right">
+            {% if i.status in progress and i.status != 'Delivered' %}
+            {% set nxt = progress[progress.index(i.status) + 1] %}
+            <form class="inline-form" method="post" action="{{ url_for('farmer.advance_order_item', item_id=i.id) }}">
+              {{ csrf() }}<button class="btn btn-sm" type="submit">Mark {{ nxt|lower }}</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No orders yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

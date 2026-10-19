@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Page not found | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <h1>Page not found</h1>
+  <p class="muted">The page you asked for does not exist or was removed.</p>
+  <a class="btn" href="{{ url_for('marketplace.index') }}">Back to the shop</a>
+</div>
+{% endblock %}

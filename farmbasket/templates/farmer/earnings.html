@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import stat, badge %}
+{% block title %}Earnings | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Earnings</h1></div>
+  <div class="stats">
+    {{ stat('Sales', stats.total_sales|inr, tone='ok') }}
+    {{ stat('Payout pending', stats.pending_earnings|inr, tone='warn' if stats.pending_earnings else 'ok') }}
+    {{ stat('Paid out', stats.paid_earnings|inr, tone='ok') }}
+  </div>
+  <p class="muted mt-m">A payout is marked paid after the order is delivered.</p>
+  <section class="section">
+    <h2>Payouts</h2>
+    {% if payouts %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Order</th><th>Created</th><th>Status</th><th class="num">Amount</th></tr></thead>
+        <tbody>
+          {% for p in payouts %}
+          <tr><td>{{ p.order.order_number if p.order else 'None' }}</td><td>{{ p.created_at|d }}</td><td>{{ badge(p.status) }}</td><td class="num">{{ p.amount|inr }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<div class="empty">No payouts yet.</div>{% endif %}
+  </section>
+</div>
+{% endblock %}

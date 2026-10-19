@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import csrf, badge, steps %}
+{% block title %}Order {{ order.order_number }} | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <p class="mt-m"><a href="{{ url_for('buyer.orders') }}">Back to orders</a></p>
+  <div class="page-head">
+    <div>
+      <h1>Order {{ order.order_number }}</h1>
+      <p class="muted">Placed {{ order.created_at|dt }}</p>
+    </div>
+    <div class="row">
+      {% if order.status in ('Confirmed', 'Packed') %}
+      <form class="inline-form" method="post" action="{{ url_for('buyer.cancel_order', order_id=order.id) }}" data-confirm="Cancel this order? Stock and any points you used are returned.">
+        {{ csrf() }}<button class="btn btn-danger" type="submit">Cancel order</button>
+      </form>
+      {% endif %}
+      <a class="btn btn-secondary" href="{{ url_for('buyer.order_invoice', order_id=order.id) }}">Download invoice</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Progress</h2>
+    {{ steps(order.status) }}
+  </div>
+
+  <div class="two-col mt-m">
+    <div class="card">
+      <h2>Delivery</h2>
+      <dl class="kv">
+        <dt>Window</dt><dd>{{ order.delivery_slot or 'Not set' }}</dd>
+        <dt>Name</dt><dd>{{ order.delivery_name }}</dd>
+        <dt>Phone</dt><dd>{{ order.delivery_phone }}</dd>
+        <dt>Address</dt><dd>{{ order.delivery_address }}, {{ order.delivery_city }} {{ order.delivery_pincode }}</dd>
+      </dl>
+    </div>
+    <div class="card">
+      <h2>Payment</h2>
+      <dl class="kv">
+        <dt>Method</dt><dd>{{ order.payment_method }}</dd>
+        <dt>Status</dt><dd>{{ badge(order.payment_status) }}</dd>
+        {% if order.coupon_code %}<dt>Coupon</dt><dd>{{ order.coupon_code }}</dd>{% endif %}
+        {% if order.points_redeemed %}<dt>Points used</dt><dd>{{ order.points_redeemed }}</dd>{% endif %}
+        {% if order.points_earned and order.status != 'Cancelled' %}<dt>Points earned</dt><dd>{{ order.points_earned }}</dd>{% endif %}
+      </dl>
+    </div>
+  </div>
+
+  <div class="card mt-m">
+    <h2>Items</h2>
+    {% for item in order.items %}
+    <div class="line">
+      <div>
+        <strong>{{ item.product_name }}</strong>
+        <div class="muted small">{{ item.price|inr }} x {{ item.quantity }}, from {{ item.farmer_ref.full_name }}</div>
+      </div>
+      <div>{{ badge(item.status) }}</div>
+      <div class="num"><strong>{{ item.subtotal|inr }}</strong></div>
+      <div>
+        {% if item.status == 'Delivered' and item.product_id not in reviewed %}
+        <details>
+          <summary>Rate</summary>
+          <form method="post" action="{{ url_for('buyer.submit_review', order_id=order.id, product_id=item.product_id) }}" class="mt-s">
+            {{ review_form.hidden_tag() }}
+            <div class="field">{{ review_form.rating.label }}{{ review_form.rating() }}</div>
+            <div class="field">{{ review_form.comment.label }}{{ review_form.comment(rows=2) }}</div>
+            <button class="btn btn-sm" type="submit">Save review</button>
+          </form>
+        </details>
+        {% elif item.product_id in reviewed %}<span class="muted small">Reviewed</span>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+    {% if order.discount_amount %}<div class="sum-row"><span>Discount</span><span>-{{ order.discount_amount|inr }}</span></div>{% endif %}
+    <div class="sum-row sum-total"><span>Total</span><span>{{ order.total_amount|inr }}</span></div>
+  </div>
+</div>
+{% endblock %}

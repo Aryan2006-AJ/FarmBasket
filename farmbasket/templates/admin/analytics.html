@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Analytics | {{ business_name }}{% endblock %}
+{% block vendor_scripts %}<script src="{{ url_for('static', filename='vendor/chart.umd.js') }}"></script>{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Analytics</h1></div>
+  <div class="two-col">
+    <div class="card"><h2>Order value, last 14 days</h2>
+      <div class="chart-box"><canvas data-chart="line" data-money="1" data-label="Order value (Rs.)" data-url="{{ url_for('admin.api_revenue_trend') }}" role="img" aria-label="Order value over the last 14 days"></canvas></div></div>
+    <div class="card"><h2>Order value by category</h2>
+      <div class="chart-box"><canvas data-chart="doughnut" data-url="{{ url_for('admin.api_category_breakdown') }}" role="img" aria-label="Order value by category"></canvas></div></div>
+  </div>
+  <div class="card"><h2>Orders by status</h2>
+    <div class="chart-box"><canvas data-chart="bar" data-label="Orders" data-url="{{ url_for('admin.api_order_status') }}" role="img" aria-label="Orders by status"></canvas></div></div>
+</div>
+{% endblock %}

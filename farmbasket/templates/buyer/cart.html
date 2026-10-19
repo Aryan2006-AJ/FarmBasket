@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import csrf, product_photo %}
+{% block title %}Cart | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Cart</h1></div>
+  {% if items %}
+  {% if blocked_ids %}
+    <div class="notice">Some items come from farmers who do not deliver to {{ current_user.locality.label if current_user.locality else 'your area' }}. Remove them to check out.</div>
+  {% endif %}
+  <div class="split">
+    <div class="card">
+      {% for item in items %}
+      <div class="line">
+        <div>
+          <strong><a href="{{ url_for('marketplace.product_detail', product_id=item.product.id) }}">{{ item.product.name }}</a></strong>
+          <div class="muted small">{{ item.product.farmer.full_name }}, {{ item.product.price|inr }} per {{ item.product.unit }}</div>
+          {% if item.id in blocked_ids %}<div class="error">Not delivered to your area</div>{% endif %}
+          {% if item.quantity > item.product.stock or not item.product.in_stock %}<div class="error">Not enough stock. {{ item.product.stock }} left.</div>{% endif %}
+        </div>
+        <div class="stepper">
+          <form class="inline-form" method="post" action="{{ url_for('buyer.decrease_quantity', item_id=item.id) }}">{{ csrf() }}<button class="btn btn-secondary btn-sm" type="submit" aria-label="Decrease quantity">-</button></form>
+          <span>{{ item.quantity }}</span>
+          <form class="inline-form" method="post" action="{{ url_for('buyer.increase_quantity', item_id=item.id) }}">{{ csrf() }}<button class="btn btn-secondary btn-sm" type="submit" aria-label="Increase quantity">+</button></form>
+        </div>
+        <div class="num"><strong>{{ item.subtotal|inr }}</strong></div>
+        <form class="inline-form" method="post" action="{{ url_for('buyer.remove_from_cart', item_id=item.id) }}">{{ csrf() }}<button class="linkbutton" type="submit">Remove</button></form>
+      </div>
+      {% endfor %}
+    </div>
+    <aside class="card">
+      <h2>Summary</h2>
+      <div class="sum-row"><span>Items</span><span>{{ items|length }}</span></div>
+      <div class="sum-row sum-total"><span>Subtotal</span><span>{{ total|inr }}</span></div>
+      <p class="muted small mt-s">Discounts and delivery window are chosen at checkout.</p>
+      {% if blocked_ids %}
+        <button class="btn btn-block" type="button" disabled>Check out</button>
+      {% else %}
+        <a class="btn btn-block" href="{{ url_for('buyer.checkout') }}">Check out</a>
+      {% endif %}
+      <a class="btn btn-secondary btn-block mt-s" href="{{ url_for('marketplace.index') }}">Keep shopping</a>
+    </aside>
+  </div>
+  {% else %}
+  <div class="empty">
+    <p>Your cart is empty.</p>
+    <a class="btn" href="{{ url_for('marketplace.index') }}">Shop</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import csrf %}
+{% block title %}Developer API | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Developer API</h1></div>
+  <div class="card">
+    <h2>Your API key</h2>
+    {% if current_user.api_key %}
+      <p><code>{{ current_user.api_key }}</code></p>
+      <p class="muted small">Keep this private. Anyone with the key can read data your account can read.</p>
+    {% else %}<p class="muted">You have not created a key.</p>{% endif %}
+    <form method="post" action="{{ url_for('account.generate_api_key') }}" data-confirm="Create a new key? The current key stops working.">
+      {{ csrf() }}<button class="btn" type="submit">{{ 'Replace key' if current_user.api_key else 'Create key' }}</button>
+    </form>
+  </div>
+  <div class="card">
+    <h2>Endpoints</h2>
+    <p>Send the key in an <code>X-API-Key</code> header.</p>
+    <ul>
+      <li><code>GET /api/v1/products</code>, with optional <code>q</code> and <code>category</code></li>
+      <li><code>GET /api/v1/products/&lt;id&gt;</code></li>
+      <li><code>GET /api/v1/orders</code> (buyer accounts)</li>
+      <li><code>GET /api/v1/me</code></li>
+    </ul>
+    <p class="muted small">Buyer keys list only products from farmers in the buyer's area. Limit: 60 requests a minute.</p>
+  </div>
+</div>
+{% endblock %}

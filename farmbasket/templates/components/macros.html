@@ -1,0 +1,70 @@
+{% macro csrf() %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endmacro %}
+
+{# Line icons. Drawn as inline vector paths, hidden from screen readers because the text beside them says the same thing. #}
+{% macro icon(name, size=20) %}<svg class="icon" width="{{ size }}" height="{{ size }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+{%- if name == 'pin' %}<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+{%- elif name == 'calendar' %}<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>
+{%- elif name == 'wallet' %}<path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+{%- elif name == 'search' %}<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+{%- elif name == 'user' %}<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+{%- elif name == 'bell' %}<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+{%- elif name == 'grid' %}<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+{%- elif name == 'leaf' %}<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.1-6C9.5 14.5 12 13 13 12"/>
+{%- elif name == 'apple' %}<path d="M12 20.9c1.5 0 2.8 1.1 4 1.1 3 0 6-8 6-12.2A4.9 4.9 0 0 0 17 5c-2.2 0-4 1.4-5 2-1-.6-2.8-2-5-2a4.9 4.9 0 0 0-5 4.8C2 14 5 22 8 22c1.2 0 2.5-1.1 4-1.1Z"/><path d="M10 2c1 .5 2 2 2 5"/>
+{%- elif name == 'wheat' %}<path d="M2 22 16 8"/><path d="M3.5 12.5 5 11l1.5 1.5a3.5 3.5 0 0 1 0 5L5 19l-1.5-1.5a3.5 3.5 0 0 1 0-5Z"/><path d="M7.5 8.5 9 7l1.5 1.5a3.5 3.5 0 0 1 0 5L9 15l-1.5-1.5a3.5 3.5 0 0 1 0-5Z"/><path d="M11.5 4.5 13 3l1.5 1.5a3.5 3.5 0 0 1 0 5L13 11l-1.5-1.5a3.5 3.5 0 0 1 0-5Z"/><path d="M20 2h2v2a4 4 0 0 1-4 4h-2V6a4 4 0 0 1 4-4Z"/><path d="M11.5 17.5 13 19l-1.5 1.5a3.5 3.5 0 0 1-5 0L5 19l1.5-1.5a3.5 3.5 0 0 1 5 0Z"/><path d="M15.5 13.5 17 15l-1.5 1.5a3.5 3.5 0 0 1-5 0L9 15l1.5-1.5a3.5 3.5 0 0 1 5 0Z"/><path d="M19.5 9.5 21 11l-1.5 1.5a3.5 3.5 0 0 1-5 0L13 11l1.5-1.5a3.5 3.5 0 0 1 5 0Z"/>
+{%- elif name == 'milk' %}<path d="M8 2h8"/><path d="M9 2v2.8a4 4 0 0 1-.7 2.2l-.6 1a4 4 0 0 0-.7 2.2V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.8a4 4 0 0 0-.7-2.2l-.6-1A4 4 0 0 1 15 4.8V2"/><path d="M7 15a6.5 6.5 0 0 1 5 0 6.5 6.5 0 0 0 5 0"/>
+{%- elif name == 'pepper' %}<path d="M16 3c1-1 3-1 4 0"/><path d="M18 3c0 3-1 6-3.5 9.5C11.5 16.5 7.5 19.5 3 20c0-4 2.5-7 6-9.5 2.5-1.7 3.5-3 4-5"/>
+{%- elif name == 'dots' %}<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>
+{%- elif name == 'box' %}<path d="m21 8-9-5-9 5 9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8M12 13v8"/>
+{%- endif -%}
+</svg>{% endmacro %}
+
+{% macro category_icon_name(category) -%}
+{{ {'Vegetables': 'leaf', 'Fruits': 'apple', 'Grains': 'wheat', 'Dairy': 'milk', 'Spices': 'pepper'}.get(category, 'dots') }}
+{%- endmacro %}
+
+{% macro field(f, help=None) %}
+<div class="field">
+  {{ f.label }}
+  {{ f(**kwargs) }}
+  {% if help %}<div class="help">{{ help }}</div>{% endif %}
+  {% for e in f.errors %}<div class="error">{{ e }}</div>{% endfor %}
+</div>
+{% endmacro %}
+
+{% macro stat(label, value, href=None, note=None, tone='info') %}
+{% if href %}<a class="stat tone-{{ tone }}" href="{{ href }}">{% else %}<div class="stat tone-{{ tone }}">{% endif %}
+  <div class="label">{{ label }}</div>
+  <div class="value">{{ value }}</div>
+  {% if note %}<div class="small muted">{{ note }}</div>{% endif %}
+{% if href %}</a>{% else %}</div>{% endif %}
+{% endmacro %}
+
+{% macro badge(text) %}
+{% set good = ['Delivered', 'Approved', 'Paid', 'Active', 'Open', 'In stock', 'Verified'] %}
+{% set bad = ['Cancelled', 'Rejected', 'Failed', 'Refunded', 'Closed', 'Deactivated', 'Out of stock', 'Unlisted'] %}
+{% set wait = ['Pending', 'Out for Delivery', 'Packed'] %}
+<span class="badge {% if text in good %}badge-ok{% elif text in bad %}badge-bad{% elif text in wait %}badge-warn{% else %}badge-muted{% endif %}">{{ text }}</span>
+{% endmacro %}
+
+{% macro steps(status) %}
+{% set order = ['Confirmed', 'Packed', 'Out for Delivery', 'Delivered'] %}
+{% if status == 'Cancelled' %}
+<p><span class="badge badge-bad">Cancelled</span></p>
+{% else %}
+<ol class="steps">
+  {% set now = order.index(status) %}
+  {% for s in order %}<li class="{% if loop.index0 < now %}done{% elif loop.index0 == now %}done current{% endif %}">{{ s }}</li>{% endfor %}
+</ol>
+{% endif %}
+{% endmacro %}
+
+{% macro product_photo(product) %}
+{% if product.image_file %}
+<div class="product-photo"><img src="{{ url_for('marketplace.product_image', filename=product.image_file) }}" alt="{{ product.name }}" loading="lazy"></div>
+{% else %}
+<div class="product-photo ph cat-{{ product.category|lower }}" role="img" aria-label="{{ product.name }}, no photo added">{{ icon(category_icon_name(product.category)|trim, 56) }}</div>
+{% endif %}
+{% endmacro %}
+
+{% macro category_tag(category) %}<span class="tag cat-{{ category|lower }}">{{ category }}</span>{% endmacro %}

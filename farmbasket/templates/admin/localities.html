@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import csrf, field, badge %}
+{% block title %}Areas | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head">
+    <div><h1>Areas</h1><p class="muted">Buyers order only from farmers in their own area. Closing an area stops new sign-ups there.</p></div>
+  </div>
+
+  <form class="card" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <h2>Add an area</h2>
+    <div class="form-row">{{ field(form.name) }}{{ field(form.city) }}</div>
+    <button class="btn" type="submit">Add area</button>
+  </form>
+
+  <section class="section">
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Area</th><th>Status</th><th class="num">Buyers</th><th class="num">Farmers</th><th class="num">Listed</th><th class="num">In stock</th><th class="num">Orders</th><th class="num">Order value</th><th></th></tr></thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td><a href="{{ url_for('admin.locality_detail', locality_id=r.locality.id) }}">{{ r.locality.label }}</a></td>
+            <td>{{ badge('Open' if r.locality.is_active else 'Closed') }}</td>
+            <td class="num">{{ r.buyers }}</td><td class="num">{{ r.farmers }}</td><td class="num">{{ r.listed }}</td>
+            <td class="num">{{ r.in_stock }}</td><td class="num">{{ r.orders }}</td><td class="num">{{ r.revenue|inr }}</td>
+            <td class="right">
+              <form class="inline-form" method="post" action="{{ url_for('admin.toggle_locality', locality_id=r.locality.id) }}">
+                {{ csrf() }}<button class="btn btn-secondary btn-sm" type="submit">{{ 'Close' if r.locality.is_active else 'Open' }}</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="9" class="muted">No areas yet. Add one above.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

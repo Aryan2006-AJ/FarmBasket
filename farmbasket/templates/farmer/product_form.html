@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import field, product_photo %}
+{% block title %}{{ 'Edit product' if mode == 'edit' else 'Add product' }} | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>{{ 'Edit product' if mode == 'edit' else 'Add product' }}</h1></div>
+  <form class="card" method="post" enctype="multipart/form-data" novalidate>
+    {{ form.hidden_tag() }}
+    {{ field(form.name) }}
+    <div class="form-row">
+      {{ field(form.category) }}
+      {{ field(form.unit) }}
+    </div>
+    {{ field(form.description, rows=3) }}
+    <div class="form-row">
+      {{ field(form.price, step="0.01", min="0.01") }}
+      {{ field(form.stock, min="0", step="1") }}
+    </div>
+    {{ field(form.freshness, help="For example: harvested this morning.") }}
+    {% if product and product.image_file %}{{ product_photo(product) }}{% endif %}
+    {{ field(form.photo, help="Use a real photo of your produce. Large images are resized.") }}
+    <div class="field check">{{ form.is_available() }}<label for="is_available">{{ form.is_available.label.text }}</label></div>
+    <div class="row">
+      <button class="btn" type="submit">{{ 'Save changes' if mode == 'edit' else 'Add product' }}</button>
+      <a class="btn btn-secondary" href="{{ url_for('farmer.products') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import csrf, badge %}
+{% block title %}Farmers | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Farmers</h1></div>
+
+  <h2>Waiting for review</h2>
+  {% if pending %}
+  {% for f in pending %}
+  <div class="card">
+    <div class="row-between">
+      <div>
+        <strong>{{ f.full_name }}</strong> <span class="muted small">{{ f.display_id }}</span>
+        <div class="muted small">{{ f.email }}, {{ f.locality.label if f.locality else 'No area' }}, submitted {{ f.kyc_submitted_at|d }}</div>
+        {% if f.kyc_document %}<a href="{{ url_for('admin.farmer_document', user_id=f.id) }}" target="_blank" rel="noopener">Open submitted document</a>{% endif %}
+      </div>
+      <div class="row">
+        <form class="inline-form" method="post" action="{{ url_for('admin.verify_farmer', user_id=f.id) }}">
+          {{ csrf() }}<input type="hidden" name="decision" value="approve"><button class="btn btn-sm" type="submit">Approve</button>
+        </form>
+        <form class="row" method="post" action="{{ url_for('admin.verify_farmer', user_id=f.id) }}">
+          {{ csrf() }}<input type="hidden" name="decision" value="reject">
+          <input type="text" name="notes" placeholder="Reason" aria-label="Reason for rejection" maxlength="255">
+          <button class="btn btn-danger btn-sm" type="submit">Reject</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}<div class="empty">No requests waiting.</div>{% endif %}
+
+  <section class="section">
+    <h2>All farmers</h2>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Area</th><th>Verification</th></tr></thead>
+        <tbody>
+          {% for f in farmers %}
+          <tr><td>{{ f.display_id }}</td><td>{{ f.full_name }}</td><td>{{ f.email }}</td><td>{{ f.locality.label if f.locality else 'Not set' }}</td><td>{{ badge(f.kyc_status) }}</td></tr>
+          {% else %}
+          <tr><td colspan="5" class="muted">No farmers yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

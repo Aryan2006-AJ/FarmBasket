@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Privacy Policy | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="prose">
+    <div class="page-head"><div><h1>Privacy Policy</h1><p class="muted">Last updated {{ config.LEGAL_LAST_UPDATED }}</p></div></div>
+
+    <p>This policy explains what personal information {{ business_name }} collects, why, and who can see it. {{ business_name }} is an online marketplace where buyers order produce from farmers who deliver in the same area.</p>
+
+    <h2>1. Information we collect</h2>
+    <p><strong>When you create an account:</strong> your name, email address, phone number (optional), your role (buyer or farmer), your area, and your password. Passwords are stored only as a salted hash, so we cannot read them. We also record when you accepted the Terms and Conditions.</p>
+    <p><strong>When you place an order:</strong> the delivery name, phone number, address, city and pincode you enter, your chosen delivery window, the items and amounts, any coupon code and loyalty points used, and the payment method and status.</p>
+    <p><strong>If you are a farmer:</strong> your product listings, prices, stock levels and photos, and, if you choose to submit one, a verification document such as an identity or farm ownership document.</p>
+    <p><strong>Other activity on the site:</strong> items in your cart and wishlist, reviews you write, notifications sent to you, and, if you create one, your API key. Admin accounts may also store a two-factor authentication secret.</p>
+    <p><strong>Technical data:</strong> a session cookie (see section 5), your IP address, which is used to limit repeated login attempts and may appear in server logs, and error logs.</p>
+    <p>We do not collect card numbers, UPI IDs or bank account details. Orders are paid in cash on delivery.</p>
+
+    <h2>2. How we use it</h2>
+    <ul>
+      <li>To create and secure your account and log you in.</li>
+      <li>To show you farmers and products that serve your area.</li>
+      <li>To process, deliver, track and, if needed, cancel your orders.</li>
+      <li>To calculate and record payouts owed to farmers.</li>
+      <li>To show notifications about your orders and listings inside the site.</li>
+      <li>To review farmer verification requests.</li>
+      <li>To prevent abuse and keep a record of administrator actions.</li>
+      <li>To meet legal, tax and accounting obligations.</li>
+    </ul>
+    <p>We do not currently send email. Order confirmations and status updates appear as notifications on the site.</p>
+
+    <h2>3. Who can see your information</h2>
+    <ul>
+      <li><strong>Farmers</strong> see the delivery name, phone number, address, delivery window and items for orders that include their products. They need this to deliver. They do not see your email address or your orders from other farmers.</li>
+      <li><strong>Buyers</strong> see a farmer's name, area, verification label and product listings. Reviews show a rating and comment, not the reviewer's name.</li>
+      <li><strong>Administrators</strong> of {{ business_name }} can see account, order and payout information, and the verification documents farmers submit.</li>
+    </ul>
+    <p>We do not sell your personal information. The site does not use advertising or analytics trackers, and it loads no third-party scripts, fonts or images. We may disclose information where the law requires it.</p>
+
+    <h2>4. Where it is stored</h2>
+    <p>Your information is stored in the database and file storage of the server that hosts {{ business_name }}. Product photos are visible to anyone who views the product. Verification documents are not public and can be opened only by administrators.</p>
+
+    <h2>5. Cookies</h2>
+    <p>We use one session cookie. It keeps you logged in, protects forms against forgery, and remembers the area you chose if you are not logged in. It expires when you close your browser. We do not use advertising or analytics cookies.</p>
+
+    <h2>6. How long we keep it</h2>
+    <p>We keep your account while it is open. We keep order and payout records for as long as needed for accounting, dispute handling and legal obligations, even if you ask us to delete your account. Server logs are rotated and older entries are overwritten.</p>
+
+    <h2>7. Security</h2>
+    <p>Passwords are hashed. Session cookies are marked HttpOnly and SameSite. Forms are protected against cross-site request forgery. Login and sign-up attempts are rate limited. Administrator accounts can use two-factor authentication. No online service can be made perfectly secure, so please use a strong, unique password.</p>
+
+    <h2>8. Your choices</h2>
+    <p>You can change your delivery area from the shop at any time. You can ask us to show you the personal information we hold about you, to correct it, or to delete your account, subject to the record-keeping in section 6. {% if support_email %}Write to <a href="mailto:{{ support_email }}">{{ support_email }}</a> with your request.{% else %}Contact the operator of this site with your request.{% endif %}</p>
+
+    <h2>9. Children</h2>
+    <p>{{ business_name }} is for people aged 18 and over. We do not knowingly collect information from children.</p>
+
+    <h2>10. Changes</h2>
+    <p>If we change this policy we will update the date at the top of this page. If a change is significant we will tell you on the site.</p>
+
+    <h2>11. Contact</h2>
+    <p>{% if support_email %}Questions about this policy: <a href="mailto:{{ support_email }}">{{ support_email }}</a>.{% else %}Questions about this policy can be sent to the operator of this site.{% endif %}</p>
+  </div>
+</div>
+{% endblock %}

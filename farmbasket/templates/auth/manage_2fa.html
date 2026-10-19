@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import csrf %}
+{% block title %}Two-factor | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <h1>Two-factor authentication is on</h1>
+  <p class="muted">Logging in requires a code from your authenticator app.</p>
+  <form class="card" method="post" action="{{ url_for('auth.disable_2fa') }}" data-confirm="Turn off two-factor authentication? Your account will be less secure.">
+    {{ csrf() }}
+    <button class="btn btn-danger" type="submit">Turn off two-factor</button>
+    <a class="btn btn-secondary" href="{{ url_for('admin.dashboard') }}">Back to dashboard</a>
+  </form>
+</div>
+{% endblock %}

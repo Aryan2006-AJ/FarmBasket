@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import stat, badge %}
+{% block title %}Dashboard | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head">
+    <div>
+      <h1>Hello, {{ current_user.full_name.split(' ')[0] }}</h1>
+      <p class="muted">Delivery area: {{ current_user.locality.label if current_user.locality else 'Not set' }}
+        (<a href="{{ url_for('marketplace.set_locality') }}">change</a>)</p>
+    </div>
+    <a class="btn" href="{{ url_for('marketplace.index') }}">Shop</a>
+  </div>
+
+  <div class="stats">
+    {{ stat('Orders', order_count, url_for('buyer.orders'), tone='info') }}
+    {{ stat('In progress', active_orders, url_for('buyer.orders'), tone='warn' if active_orders else 'info') }}
+    {{ stat('Cart items', cart_count, url_for('buyer.cart'), tone='info') }}
+    {{ stat('Wishlist', wishlist_count, url_for('buyer.wishlist'), tone='info') }}
+    {{ stat('Spent', lifetime_spend|inr, tone='ok') }}
+    {{ stat('Loyalty points', current_user.loyalty_points or 0, url_for('buyer.loyalty'), tone='ok') }}
+  </div>
+
+  <section class="section">
+    <div class="row-between"><h2>Recent orders</h2><a href="{{ url_for('buyer.orders') }}">All orders</a></div>
+    {% if recent_orders %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Order</th><th>Placed</th><th>Delivery window</th><th>Status</th><th class="num">Total</th></tr></thead>
+        <tbody>
+          {% for o in recent_orders %}
+          <tr>
+            <td><a href="{{ url_for('buyer.order_detail', order_id=o.id) }}">{{ o.order_number }}</a></td>
+            <td>{{ o.created_at|d }}</td><td>{{ o.delivery_slot or 'Not set' }}</td>
+            <td>{{ badge(o.status) }}</td><td class="num">{{ o.total_amount|inr }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty">You have not placed an order yet.</div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

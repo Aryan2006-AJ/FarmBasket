@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Notifications | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Notifications</h1></div>
+  {% if notifications %}
+  <div class="card">
+    {% for n in notifications %}
+    <div class="review">
+      {% if n.link %}<a href="{{ n.link }}">{{ n.message }}</a>{% else %}{{ n.message }}{% endif %}
+      {% if n.id in unread_ids %}<span class="badge badge-ok">New</span>{% endif %}
+      <div class="muted small">{{ n.created_at|dt }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}<div class="empty">Nothing yet.</div>{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import csrf, badge, product_photo, category_tag %}
+{% block title %}{{ product.name }} | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <p class="mt-m"><a href="{{ url_for('marketplace.index') }}">Back to shop</a></p>
+
+  <div class="detail">
+    {{ product_photo(product) }}
+    <div>
+      <h1>{{ product.name }}</h1>
+      <p>{{ category_tag(product.category) }}</p>
+      <p class="price price-lg">{{ product.price|inr }} <span class="muted small">per {{ product.unit }}</span></p>
+
+      <dl class="kv">
+        <dt>Farmer</dt><dd>{{ product.farmer.full_name }}{% if product.farmer.is_verified_farmer %} {{ badge('Verified') }}{% endif %}</dd>
+        <dt>Delivers from</dt><dd>{{ product.farmer.locality.label if product.farmer.locality else 'Not set' }}</dd>
+        {% if product.freshness %}<dt>Freshness</dt><dd>{{ product.freshness }}</dd>{% endif %}
+        <dt>Availability</dt>
+        <dd>{% if product.in_stock %}{{ product.stock }} {{ product.unit }} in stock{% elif product.is_available %}Out of stock{% else %}Not listed for sale{% endif %}</dd>
+        {% if product.avg_rating %}<dt>Rating</dt><dd>{{ product.avg_rating }} out of 5 ({{ product.reviews|length }} review{{ '' if product.reviews|length == 1 else 's' }})</dd>{% endif %}
+      </dl>
+
+      {% if product.description %}<p class="mt-m">{{ product.description }}</p>{% endif %}
+
+      <div class="mt-l">
+        {% if not current_user.is_authenticated %}
+          <a class="btn" href="{{ url_for('auth.login') }}">Log in to order</a>
+        {% elif current_user.role == 'buyer' %}
+          {% if buyer_can_order and product.in_stock %}
+            <form class="buy-row" method="post" action="{{ url_for('marketplace.add_to_cart', product_id=product.id) }}">
+              {{ csrf() }}
+              <input class="qty" type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" aria-label="Quantity">
+              <button class="btn btn-accent" type="submit">Add to cart</button>
+            </form>
+          {% elif not product.in_stock %}
+            <p class="muted">This product cannot be ordered right now.</p>
+          {% else %}
+            <p class="muted">This farmer does not deliver to your area.</p>
+          {% endif %}
+          <form class="block mt-s" method="post" action="{{ url_for('buyer.add_to_wishlist', product_id=product.id) }}">
+            {{ csrf() }}
+            <button class="btn btn-secondary btn-sm" type="submit">Save to wishlist</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% if related %}
+  <section class="section">
+    <h2>Often bought with this</h2>
+    <div class="grid-products">
+      {% for r in related %}
+      <div class="product">
+        {{ product_photo(r) }}
+        <div class="product-body">
+          <h3><a href="{{ url_for('marketplace.product_detail', product_id=r.id) }}">{{ r.name }}</a></h3>
+          <span class="price">{{ r.price|inr }} <span class="muted small">per {{ r.unit }}</span></span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if product.reviews %}
+  <section class="section">
+    <h2>Reviews</h2>
+    <div class="card">
+      {% for r in product.reviews %}
+      <div class="review">
+        <strong>{{ r.rating }} out of 5</strong> <span class="muted small">{{ r.created_at|d }}</span>
+        {% if r.comment %}<p>{{ r.comment }}</p>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

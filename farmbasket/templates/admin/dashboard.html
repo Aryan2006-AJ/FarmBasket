@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import stat, badge %}
+{% block title %}Admin dashboard | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head">
+    <div><h1>Dashboard</h1><p class="muted">Live counts from the database.</p></div>
+    <a class="btn btn-secondary" href="{{ url_for('admin.localities') }}">Manage areas</a>
+  </div>
+
+  <h2>People</h2>
+  <div class="stats">
+    {{ stat('Buyers', stats.buyers, url_for('admin.users'), tone='info') }}
+    {{ stat('Farmers', stats.farmers, url_for('admin.farmers'), tone='info') }}
+    {{ stat('Verification requests', stats.pending_kyc, url_for('admin.farmers'), tone='warn' if stats.pending_kyc else 'ok') }}
+  </div>
+
+  <h2 class="mt-l">Catalogue and orders</h2>
+  <div class="stats">
+    {{ stat('Products listed', stats.products, url_for('admin.products'), tone='info') }}
+    {{ stat('Products in stock', stats.products_in_stock, tone='ok') }}
+    {{ stat('Orders', stats.orders, url_for('admin.orders'), tone='info') }}
+    {{ stat('In progress', stats.active_orders, tone='warn' if stats.active_orders else 'info') }}
+    {{ stat('Delivered', stats.delivered, tone='ok') }}
+    {{ stat('Cancelled', stats.cancelled, tone='bad' if stats.cancelled else 'info') }}
+  </div>
+
+  <h2 class="mt-l">Money</h2>
+  <div class="stats">
+    {{ stat('Order value', stats.order_value|inr, note='Excludes cancelled orders', tone='ok') }}
+    {{ stat('Farmer payouts pending', stats.payouts_pending|inr, url_for('admin.payments'), tone='warn' if stats.payouts_pending else 'ok') }}
+    {{ stat('Farmer payouts paid', stats.payouts_paid|inr, url_for('admin.payments'), tone='ok') }}
+  </div>
+
+  <section class="section">
+    <div class="row-between"><h2>Open areas</h2><a href="{{ url_for('admin.localities') }}">All areas</a></div>
+    {% if rows %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Area</th><th class="num">Buyers</th><th class="num">Farmers</th><th class="num">In stock</th><th class="num">Orders</th><th>Coverage</th></tr></thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td><a href="{{ url_for('admin.locality_detail', locality_id=r.locality.id) }}">{{ r.locality.label }}</a></td>
+            <td class="num">{{ r.buyers }}</td><td class="num">{{ r.farmers }}</td>
+            <td class="num">{{ r.in_stock }}</td><td class="num">{{ r.orders }}</td>
+            <td>{% if r.farmers == 0 %}{{ badge('No farmers') }}{% elif r.in_stock == 0 %}{{ badge('Nothing in stock') }}{% else %}{{ badge('Active') }}{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<div class="empty">No areas are open.</div>{% endif %}
+  </section>
+
+  <section class="section">
+    <div class="row-between"><h2>Latest orders</h2><a href="{{ url_for('admin.orders') }}">All orders</a></div>
+    {% if recent_orders %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Order</th><th>Buyer</th><th>Area</th><th>Status</th><th class="num">Total</th></tr></thead>
+        <tbody>
+          {% for o in recent_orders %}
+          <tr><td>{{ o.order_number }}</td><td>{{ o.buyer.full_name }}</td><td>{{ o.locality.label if o.locality else 'Not set' }}</td><td>{{ badge(o.status) }}</td><td class="num">{{ o.total_amount|inr }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<div class="empty">No orders yet.</div>{% endif %}
+  </section>
+</div>
+{% endblock %}

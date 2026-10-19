@@ -1,0 +1,18 @@
+services:
+  farmbasket:
+    build: .
+    ports:
+      - "5000:5000"
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - farmbasket_instance:/app/instance
+      - farmbasket_uploads:/app/uploads
+      - farmbasket_logs:/app/logs
+    restart: unless-stopped
+
+volumes:
+  farmbasket_instance:
+  farmbasket_uploads:
+  farmbasket_logs:

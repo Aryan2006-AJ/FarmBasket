@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import badge %}
+{% block title %}Orders | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Orders</h1><a class="btn btn-secondary" href="{{ url_for('admin.export_orders_csv') }}">Export CSV</a></div>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Order</th><th>Buyer</th><th>Area</th><th>Window</th><th>Payment</th><th>Status</th><th>Placed</th><th class="num">Total</th></tr></thead>
+      <tbody>
+        {% for o in orders %}
+        <tr>
+          <td>{{ o.order_number }}</td><td>{{ o.buyer.full_name }}</td><td>{{ o.locality.label if o.locality else 'Not set' }}</td>
+          <td>{{ o.delivery_slot or 'Not set' }}</td><td>{{ o.payment_method }} {{ badge(o.payment_status) }}</td>
+          <td>{{ badge(o.status) }}</td><td>{{ o.created_at|d }}</td><td class="num">{{ o.total_amount|inr }}</td>
+        </tr>
+        {% else %}<tr><td colspan="8" class="muted">No orders yet.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

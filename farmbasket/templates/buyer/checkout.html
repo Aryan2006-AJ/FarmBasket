@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import field %}
+{% block title %}Checkout | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Checkout</h1></div>
+  <div class="split">
+    <form class="card" method="post" action="{{ url_for('buyer.checkout') }}" novalidate>
+      {{ form.hidden_tag() }}
+      <h2>Delivery</h2>
+      <div class="form-row">
+        {{ field(form.delivery_name) }}
+        {{ field(form.delivery_phone) }}
+      </div>
+      {{ field(form.delivery_address, help="House or flat number, street and landmark.") }}
+      <div class="form-row">
+        {{ field(form.delivery_city) }}
+        {{ field(form.delivery_pincode) }}
+      </div>
+      {{ field(form.delivery_slot, help="The farmer delivers inside this window.") }}
+
+      <h2 class="mt-l">Payment</h2>
+      {{ field(form.payment_method, help="You pay in cash when your order arrives.") }}
+
+      <h2 class="mt-l">Discounts</h2>
+      <div class="field">
+        {{ form.coupon_code.label }}
+        <div class="input-row">
+          {{ form.coupon_code(id="coupon_code", autocomplete="off") }}
+          <button class="btn btn-secondary" type="button" id="check-coupon" data-url="{{ url_for('buyer.validate_coupon') }}">Check</button>
+        </div>
+        <div id="coupon-feedback" class="help"></div>
+        {% for e in form.coupon_code.errors %}<div class="error">{{ e }}</div>{% endfor %}
+      </div>
+      {% if max_points > 0 %}
+        {{ field(form.redeem_points, help="You have " ~ current_user.loyalty_points ~ " points. You can use up to " ~ max_points ~ " on this order (1 point = " ~ point_value|inr ~ ").", min=0, max=max_points) }}
+      {% endif %}
+
+      <button class="btn btn-accent btn-block mt-m" type="submit">Place order</button>
+    </form>
+
+    <aside class="card">
+      <h2>Your order</h2>
+      {% for item in items %}
+      <div class="sum-row"><span>{{ item.product.name }} x {{ item.quantity }}</span><span>{{ item.subtotal|inr }}</span></div>
+      {% endfor %}
+      <div class="sum-row sum-total"><span>Subtotal</span><span>{{ total|inr }}</span></div>
+      <p class="muted small mt-s">Coupon and points discounts are applied when you place the order.</p>
+    </aside>
+  </div>
+</div>
+{% endblock %}

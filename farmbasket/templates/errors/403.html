@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}You do not have access to this page | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <h1>You do not have access to this page</h1>
+  <p class="muted">Your account does not have permission to view this page.</p>
+  <a class="btn" href="{{ url_for('marketplace.index') }}">Back to the shop</a>
+</div>
+{% endblock %}

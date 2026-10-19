@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Audit log | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Audit log</h1></div>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>When</th><th>Who</th><th>Action</th><th>Details</th></tr></thead>
+      <tbody>
+        {% for l in logs %}
+        <tr><td>{{ l.created_at|dt }}</td><td>{{ l.actor.full_name if l.actor else 'System' }}</td><td>{{ l.action }}</td><td>{{ l.details or '' }}</td></tr>
+        {% else %}<tr><td colspan="4" class="muted">Nothing recorded yet.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

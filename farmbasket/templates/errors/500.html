@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Something went wrong | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <h1>Something went wrong</h1>
+  <p class="muted">The request could not be completed. Try again, and contact support if it keeps happening.</p>
+  <a class="btn" href="{{ url_for('marketplace.index') }}">Back to the shop</a>
+</div>
+{% endblock %}

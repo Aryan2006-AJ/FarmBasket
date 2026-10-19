@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import field %}
+{% block title %}Choose your area | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <h1>Choose your area</h1>
+  <p class="muted">You will see farmers who deliver to this area, and you can order from them.</p>
+  {% if not has_localities %}
+    <div class="notice">No delivery areas are open yet.</div>
+  {% else %}
+  <form class="card" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    {{ field(form.locality_id) }}
+    <button class="btn" type="submit">Save area</button>
+    <a class="btn btn-secondary" href="{{ url_for('marketplace.index') }}">Cancel</a>
+  </form>
+  {% endif %}
+  <p class="mt-m"><a href="{{ url_for('marketplace.index', all=1) }}">Browse products from all areas</a></p>
+</div>
+{% endblock %}

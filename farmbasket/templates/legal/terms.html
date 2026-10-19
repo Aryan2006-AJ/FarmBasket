@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Terms and Conditions | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="prose">
+    <div class="page-head"><div><h1>Terms and Conditions</h1><p class="muted">Last updated {{ config.LEGAL_LAST_UPDATED }}</p></div></div>
+
+    <p>These terms govern your use of {{ business_name }}. By creating an account you agree to them and to our <a href="{{ url_for('legal.privacy') }}">Privacy Policy</a>. If you do not agree, do not use the site.</p>
+
+    <h2>1. Who can use the site</h2>
+    <p>You must be at least 18 years old and able to enter a binding contract. You must give accurate information, keep your password private, and use only one account. You are responsible for activity on your account.</p>
+
+    <h2>2. What {{ business_name }} is</h2>
+    <p>{{ business_name }} is a marketplace. Farmers list produce, buyers order it, and the farmer delivers. Farmers are independent sellers, not employees or agents of {{ business_name }}. The sale is between the buyer and the farmer. We provide the ordering system, notifications, verification review and payout records.</p>
+
+    <h2>3. Areas and delivery</h2>
+    <p>Each account belongs to one area. Buyers can order only from farmers in their own area, and farmers deliver only inside theirs. At checkout the buyer picks a delivery window, and the farmer should deliver within it. Buyers must give a correct address and phone number and be reachable at delivery. If a delivery fails because the buyer cannot be reached or the address is wrong, the farmer may treat the order as cancelled.</p>
+
+    <h2>4. Orders, prices and stock</h2>
+    <p>Prices are set by farmers and shown in Indian rupees. Stock is limited and is reduced when an order is placed. An order moves through Confirmed, Packed, Out for Delivery and Delivered. Where a farmer cannot fulfil an order, we may cancel it.</p>
+
+    <h2>5. Payment</h2>
+    <p>Orders are paid in cash on delivery. The buyer pays when the order is handed over. Online payment is not offered.</p>
+
+    <h2>6. Cancellations</h2>
+    <p>A buyer may cancel an order from the order page until it is marked Out for Delivery. After that it can no longer be cancelled on the site. If there is a problem with delivered produce, contact us and we will help the buyer and the farmer reach a fair outcome.</p>
+
+    <h2>7. Rules for farmers</h2>
+    <ul>
+      <li>List only produce you grow or lawfully sell, with an accurate name, category, price, unit and quantity.</li>
+      <li>Keep stock levels accurate and deliver what was ordered, fresh and within the chosen window.</li>
+      <li>Follow the laws that apply to selling and handling food, including any licences or registrations you need.</li>
+      <li>Use photos of your own produce.</li>
+      <li>Documents you submit for verification must be genuine. A Verified label means an administrator reviewed a document. It is not a guarantee of quality.</li>
+      <li>Payouts are recorded as owed once an order is placed and are marked paid when it is delivered. Payouts for cancelled orders are cancelled.</li>
+    </ul>
+
+    <h2>8. Coupons and loyalty points</h2>
+    <p>Coupons and loyalty points have no cash value and cannot be transferred. Points can pay for up to half of an order. If an order is cancelled, points used on it are returned and points earned on it are removed. We may change or end coupon and points programmes at any time without affecting orders already placed.</p>
+
+    <h2>9. Reviews</h2>
+    <p>You can review a product after it is delivered to you. Reviews must be honest and about the product. We may remove reviews that are abusive, false or unrelated.</p>
+
+    <h2>10. Acceptable use</h2>
+    <p>Do not misuse the site. This includes trying to order outside your area by any other route, creating fake accounts or orders, scraping the site, interfering with its security, sharing your API key, or harassing other users. We may suspend or deactivate an account that breaks these terms or harms other users.</p>
+
+    <h2>11. Our responsibility</h2>
+    <p>We work to keep the site available and accurate, but we do not promise it will be uninterrupted or free of errors. Farmers are responsible for the produce they sell. To the extent the law allows, {{ business_name }} is not liable for indirect or consequential loss, and our total liability for any claim is limited to the value of the order it relates to. Nothing in these terms limits rights you have under law that cannot be excluded.</p>
+
+    <h2>12. Changes</h2>
+    <p>We may update these terms. The date above shows the latest version. If you keep using the site after a change, you accept the updated terms.</p>
+
+    {% if config.LEGAL_JURISDICTION %}
+    <h2>13. Governing law</h2>
+    <p>These terms are governed by the laws of India. Courts at {{ config.LEGAL_JURISDICTION }} have jurisdiction over disputes about them.</p>
+    {% endif %}
+
+    <h2>{{ '14' if config.LEGAL_JURISDICTION else '13' }}. Contact</h2>
+    <p>{% if support_email %}Questions about these terms: <a href="mailto:{{ support_email }}">{{ support_email }}</a>.{% else %}Questions about these terms can be sent to the operator of this site.{% endif %}</p>
+  </div>
+</div>
+{% endblock %}

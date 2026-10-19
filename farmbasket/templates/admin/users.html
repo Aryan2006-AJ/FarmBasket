@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import csrf, badge %}
+{% block title %}Users | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Users</h1><a class="btn btn-secondary" href="{{ url_for('admin.export_users_csv') }}">Export CSV</a></div>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Area</th><th>Joined</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ u.display_id }}</td><td>{{ u.full_name }}</td><td>{{ u.email }}</td><td>{{ u.role|capitalize }}</td>
+          <td>{{ u.locality.label if u.locality else 'Not set' }}</td><td>{{ u.created_at|d }}</td>
+          <td>{{ badge('Active' if u.is_active else 'Deactivated') }}</td>
+          <td class="right">
+            {% if u.id != current_user.id %}
+            <form class="inline-form" method="post" action="{{ url_for('admin.toggle_user_active', user_id=u.id) }}" data-confirm="{{ 'Deactivate' if u.is_active else 'Reactivate' }} {{ u.full_name }}?">
+              {{ csrf() }}<button class="btn {{ 'btn-danger' if u.is_active else 'btn-secondary' }} btn-sm" type="submit">{{ 'Deactivate' if u.is_active else 'Reactivate' }}</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

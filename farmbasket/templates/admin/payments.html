@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import csrf, badge %}
+{% block title %}Payments | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head">
+    <h1>Payments and payouts</h1>
+    <div class="row">
+      <form class="inline-form" method="post" action="{{ url_for('admin.run_payout_batch') }}">{{ csrf() }}<button class="btn btn-sm" type="submit">Settle payouts for delivered orders</button></form>
+      <form class="inline-form" method="post" action="{{ url_for('admin.run_stock_digest') }}">{{ csrf() }}<button class="btn btn-secondary btn-sm" type="submit">Send low stock digest</button></form>
+    </div>
+  </div>
+  <p class="muted">This also runs on its own every 30 minutes. A payout is marked paid here when the order is delivered. No bank transfer is made by this software.</p>
+
+  <section class="section">
+    <h2>Buyer payments</h2>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Reference</th><th>Order</th><th>Method</th><th>Status</th><th>Date</th><th class="num">Amount</th></tr></thead>
+        <tbody>
+          {% for p in payments %}
+          <tr><td>{{ p.transaction_ref }}</td><td>{{ p.order.order_number }}</td><td>{{ p.method }}</td><td>{{ badge(p.status) }}</td><td>{{ p.created_at|d }}</td><td class="num">{{ p.amount|inr }}</td></tr>
+          {% else %}<tr><td colspan="6" class="muted">No payments yet.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Farmer payouts</h2>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Farmer</th><th>Order</th><th>Status</th><th>Created</th><th class="num">Amount</th></tr></thead>
+        <tbody>
+          {% for p in payouts %}
+          <tr><td>{{ p.farmer.full_name }}</td><td>{{ p.order.order_number if p.order else 'None' }}</td><td>{{ badge(p.status) }}</td><td>{{ p.created_at|d }}</td><td class="num">{{ p.amount|inr }}</td></tr>
+          {% else %}<tr><td colspan="5" class="muted">No payouts yet.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

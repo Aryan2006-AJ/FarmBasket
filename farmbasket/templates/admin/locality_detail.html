@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import stat, badge %}
+{% block title %}{{ stats.locality.label }} | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <p class="mt-m"><a href="{{ url_for('admin.localities') }}">Back to areas</a></p>
+  <div class="page-head"><div><h1>{{ stats.locality.label }}</h1><p class="muted">What is and is not available here.</p></div>{{ badge('Open' if stats.locality.is_active else 'Closed') }}</div>
+
+  <div class="stats">
+    {{ stat('Buyers', stats.buyers, tone='info') }}
+    {{ stat('Farmers', stats.farmers, tone='info') }}
+    {{ stat('Products in stock', stats.in_stock, note='of ' ~ stats.listed ~ ' listed', tone='ok') }}
+    {{ stat('Orders', stats.orders, tone='info') }}
+    {{ stat('Order value', stats.revenue|inr, tone='ok') }}
+  </div>
+
+  {% if missing_categories %}
+  <div class="notice mt-m">No product in stock for: {{ missing_categories|join(', ') }}.</div>
+  {% endif %}
+
+  <section class="section">
+    <h2>Products</h2>
+    {% if products %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Product</th><th>Category</th><th>Farmer</th><th class="num">Stock</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for p in products %}
+          <tr><td>{{ p.name }}</td><td>{{ p.category }}</td><td>{{ p.farmer.full_name }}</td><td class="num">{{ p.stock }} {{ p.unit }}</td>
+              <td>{{ badge('In stock' if p.in_stock else ('Out of stock' if p.is_available else 'Unlisted')) }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<div class="empty">No farmer in this area has listed a product.</div>{% endif %}
+  </section>
+
+  <section class="section">
+    <h2>Farmers</h2>
+    {% if farmers %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Name</th><th>Email</th><th>Verification</th></tr></thead>
+        <tbody>{% for f in farmers %}<tr><td>{{ f.full_name }}</td><td>{{ f.email }}</td><td>{{ badge(f.kyc_status) }}</td></tr>{% endfor %}</tbody>
+      </table>
+    </div>
+    {% else %}<div class="empty">No farmers registered in this area.</div>{% endif %}
+  </section>
+</div>
+{% endblock %}

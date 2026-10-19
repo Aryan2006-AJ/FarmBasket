@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import badge %}
+{% block title %}Order confirmed | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head">
+    <div>
+      <h1>Order confirmed</h1>
+      <p class="muted">Order {{ order.order_number }}</p>
+    </div>
+  </div>
+  <div class="split">
+    <div class="card">
+      <dl class="kv">
+        <dt>Delivery window</dt><dd>{{ order.delivery_slot }}</dd>
+        <dt>Deliver to</dt><dd>{{ order.delivery_name }}, {{ order.delivery_phone }}<br>{{ order.delivery_address }}, {{ order.delivery_city }} {{ order.delivery_pincode }}</dd>
+        <dt>Payment</dt><dd>{{ order.payment_method }} {{ badge(order.payment_status) }}</dd>
+        <dt>Total</dt><dd><strong>{{ order.total_amount|inr }}</strong></dd>
+        {% if order.discount_amount %}<dt>Discount applied</dt><dd>{{ order.discount_amount|inr }}{% if order.coupon_code %} (coupon {{ order.coupon_code }}){% endif %}</dd>{% endif %}
+        {% if order.points_earned %}<dt>Points earned</dt><dd>{{ order.points_earned }}</dd>{% endif %}
+      </dl>
+      <div class="row mt-l">
+        <a class="btn" href="{{ url_for('buyer.order_detail', order_id=order.id) }}">Track order</a>
+        <a class="btn btn-secondary" href="{{ url_for('marketplace.index') }}">Keep shopping</a>
+      </div>
+    </div>
+    <aside class="card">
+      <h2>Order reference</h2>
+      <img class="qr" src="data:image/png;base64,{{ qr_base64 }}" alt="QR code with order number {{ order.order_number }}">
+      <p class="muted small mt-s">Show this to the farmer at delivery if asked.</p>
+    </aside>
+  </div>
+</div>
+{% endblock %}

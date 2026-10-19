@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "components/macros.html" import field %}
+{% block title %}Turn on two-factor | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <h1>Turn on two-factor authentication</h1>
+  <p class="muted">Scan the code with an authenticator app such as Google Authenticator or Authy, then enter the 6 digit code it shows.</p>
+  <div class="card">
+    <img class="qr" src="data:image/png;base64,{{ qr_base64 }}" alt="QR code for your authenticator app">
+    <p class="small muted">Cannot scan? Enter this key by hand: <code>{{ secret }}</code></p>
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      {{ field(form.code, autocomplete="one-time-code", inputmode="numeric") }}
+      <button class="btn" type="submit">Turn on</button>
+      <a class="btn btn-secondary" href="{{ url_for('admin.dashboard') }}">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

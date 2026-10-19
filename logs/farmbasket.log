@@ -1,0 +1,16 @@
+2026-10-19 13:43:47,407 WARNING [farmbasket] FARMBASKET_SUPPORT_EMAIL is not set. Legal pages will show no contact address.
+2026-10-19 13:46:01,470 WARNING [farmbasket] FARMBASKET_SUPPORT_EMAIL is not set. Legal pages will show no contact address.
+2026-10-19 17:54:02,019 WARNING [farmbasket] FARMBASKET_SUPPORT_EMAIL is not set. Legal pages will show no contact address.
+2026-10-19 18:05:28,271 INFO [farmbasket.email] Email (logged, not sent)
+To: aryanmanojjagtap1@gmail.com
+Subject: Order FB32626A72AB confirmed
+
+Hello Aryan Jagtap 1,
+
+Your order FB32626A72AB for Rs. 240.00 is confirmed.
+Delivery window: Morning, 7 am to 10 am
+Payment: COD (Pending)
+Deliver to: Astonia Royale, Pune 411046
+
+FarmBasket
+2026-10-19 18:09:28,381 WARNING [farmbasket] FARMBASKET_SUPPORT_EMAIL is not set. Legal pages will show no contact address.
